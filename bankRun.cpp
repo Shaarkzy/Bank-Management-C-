@@ -2,16 +2,26 @@
 #include <iostream>
 #include <sqlite3.h>
 #include <string>
-
+#include "UTILS/utils.h"
 using namespace std;
+
+/*
+bool containsText(const string& input) {
+    for (char c : input) {
+        if (!isdigit(c)) { // if character is not a digit
+            return true; // contains text
+        }
+    }
+    return false; // only digits
+}*/
 
 
 sqlite3* db;
 int rc;
 void check()
 {
-        rc = sqlite3_open("bank_db.db", &db);
-	int rc = sqlite3_open("bank_db.db", &db);
+        rc = sqlite3_open("UTILS/bank_db.db", &db);
+	int rc = sqlite3_open("UTILS/bank_db.db", &db);
 	if (rc != SQLITE_OK)
 	{
                 cout << endl;
@@ -23,6 +33,7 @@ void check()
 		cout << string(65 ,'=') << endl;
 		cout << string(20, ' ') <<  "[@] Database Initiated Successfully...✓ " << endl;
 		cout << string(65, '=') << endl;
+		 
 	}
 }
 
@@ -41,6 +52,7 @@ void create_table()
 	else
 	{
 		cout << string(25, ' ') << "[@]::Table created ..✓ " << endl;
+		 
 		cout << string(65, '=') << endl;
 
 	}
@@ -85,12 +97,15 @@ void add_user(int account, int pass, string secret_word, int amount)
             if (rc != SQLITE_OK)
 	    {
 		    cout << "[@]::Insertion failed: " << sqlite3_errmsg(db) << endl;
+		    sqlite3_close(db);
 	    }
 	    else
 	    {
 		    cout << string(65, '=') << endl;
 		    cout << string(20, ' ') << "[@]::Sign Up Successfull..✓" << endl;
+	             
 		    cout << string(65, '=') << endl;
+                    sqlite3_close(db);
 		
 	    }
 	}
@@ -106,8 +121,16 @@ void add_user(int account, int pass, string secret_word, int amount)
 
 
 
-bool send(int accn, int amount)
+bool send(int accn, int amount, int account)
 {
+	if (accn == account){
+		cout << string(65, '=') << endl;
+		cout << "Error, invalid account" << endl;
+		cout << string(65, '=') << endl;
+		sqlite3_close(db);
+		return false;
+	}
+	else{
         sqlite3_stmt* stmt1;
         string loginQuery = "SELECT * FROM Bank WHERE acc_n = '" +to_string(accn)+ "';";
         rc = sqlite3_prepare_v2(db, loginQuery.c_str(), -1, &stmt1
@@ -136,11 +159,12 @@ bool send(int accn, int amount)
                              }
                             else
                             {
-                                    cout << "Error 1" << sqlite3_errmsg(db) << endl;
+                                    cout << "[x]::Error" << sqlite3_errmsg(db) << endl;
+				    sqlite3_close(db);
 				    return false;
 				
                             }
-		         }
+		         }//int mo = stoi(new_money);
 		         else
 		         {
 			     cout << string(65, '=') << endl;	 
@@ -157,7 +181,9 @@ bool send(int accn, int amount)
 	{
 		cout << sqlite3_errmsg(db);
 		return false;
+		sqlite3_close(db);
 		
+	}
 	}
 
 
@@ -182,47 +208,98 @@ void transaction(int account)
 {
 	cout << string(20, ' ') << endl;
 	cout << string(65, '=') << endl;
-	cout << "[@]::Add money[1] or Receive[2] or Send[3]: ";
-	int choose;
+	cout << "[@]::Add money[1] or Send[2]: ";
+	string choose;
 	cin >> choose;
+	cout << string(65, '=') << endl;
+	if (containsText(choose)){
+	    //cin.clear();
+	    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	    cout << "[x]::Error, text not allowed" << endl;
+	    cout << string(65, '=') << endl;
+	    sqlite3_close(db);
+	    
+	}
+	else{
 	sqlite3_stmt* stmt1;
         string loginQuery = "SELECT * FROM Bank WHERE acc_n = '" + to_string(account)+ "';";
         rc = sqlite3_prepare_v2(db, loginQuery.c_str(), -1, &stmt1, nullptr);
-        int amount; int init_money; int new_money;
+        int amount; int init_money; string new_money; string host;
 
 	if (rc == SQLITE_OK)
 	{
 		while (sqlite3_step(stmt1) == SQLITE_ROW)
 		{
                     init_money = sqlite3_column_int(stmt1, 4);
-		    if (choose == 1)
+		    if (choose == "1")
 		    {
 			    cout << string(65, '=') << endl;
 			    cout << "[@]::Balance: " << init_money<< endl;
 			    cout << string(65, '=') << endl;
 			    cout << "[@]::Amount To Credit: ";
 			    cin >> new_money;
-			    amount = init_money + new_money;
+			    if (containsText(new_money)){
+			    //cin.clear();
+			    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			    cout << string(65, '=') << endl;
+			    cout << "[x]::Error, alphabet not allowed" << endl;
+			    cout << string(65, '=') << endl;
+			    sqlite3_close(db);
+			    //break;
+			    }
+			    else{
+			    //int mo = stoi(new_money);
+			    amount = init_money + stoi(new_money);
 
 		    }
-		    else if (choose == 2)
+		    } /*
+		    else if (choose == "2")
 		    {
 			    cout << "[@]::Balance: " << init_money << endl;
 			    cout << "[@]::Amount To debit: ";
 			    cin >> new_money;
-			    amount = init_money - new_money;
-		    }
-		    else if (choose == 3)
+			    if (containsText(new_money)){
+			    //cin.clear();
+			    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			    cout << "errror" << endl;
+			    break;
+			    }
+			    else{
+			    int mo = stoi(new_money);
+			    amount = init_money - mo;
+			    }
+		    } */
+		    else if (choose == "2")
 		    {
 			    cout << "[@]::Balance: " << init_money<< endl;
 
-			    int host;
+			    //string host;
 			    cout << "[@]::Account Number: ";
 			    cin >> host;
+			    if (containsText(host)){
+			    //cin.clear();
+			    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			    cout << string(65, '=') << endl;
+			    cout << "[x]::Error, alphabet not allowed" << endl;
+			    cout << string(65, '=') << endl;
+			    sqlite3_close(db);
+			    }
+			    else{
+			    int ho = stoi(host);
+
 			    cout << "[@]::Amount: ";
 			    cin >> new_money;
-
-			    int tol1 = init_money - new_money;
+			    if (containsText(new_money)){
+			    //cin.clear();
+			    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			    cout << string(65, '=') << endl;
+			    cout << "[x]::Error, alphabet not allowed" << endl;
+			    cout << string(65, '=') << endl;
+			    sqlite3_close(db);
+			    }
+			    else{
+			    int mo = stoi(new_money);
+			    int tol1 = init_money - mo;
 
 			    if (tol1 < 0)
 			    {
@@ -236,9 +313,12 @@ void transaction(int account)
 			    }
 			    else
 			    {
-				    if (send(host, new_money))
+				    int ho = stoi(host);
+				    int mo = stoi(new_money);
+				    if (send(ho, mo, account))
 				    {
-					    amount = init_money - new_money;
+					    int mo = stoi(new_money);
+					    amount = init_money - mo;
 					    sqlite3_close(db);
 				       
 				    }
@@ -248,51 +328,55 @@ void transaction(int account)
 					    sqlite3_close(db);
 				    }
 			    }
-
-
-
+			    }
+			    }
 		    }
-		    
-		}
+		
 	
 
-
-
-
-				    
-
-
-
+                    if (containsText(new_money) || containsText(host)){
+				continue;
+				sqlite3_close(db);
+				}
+		else{
 	            string updateQueryString = "UPDATE Bank SET amount ="+ to_string(amount) +" WHERE acc_n = '"+to_string(account)+"';";
                     const char* updateQuery = updateQueryString.c_str();
 	            rc = sqlite3_exec(db, updateQuery, 0, 0, 0);
 	            if (rc != SQLITE_OK)
 	            {
 			cout << string(65, '=') << endl;
-                        cout << "[x]::Transaction Failed..: " << sqlite3_errmsg(db) << endl;
+                        cout << "[x]::Transaction Failed " << sqlite3_errmsg(db) << endl;
 			cout << string(65, '=') << endl;
+			sqlite3_close(db);
 	            }
 	            else
 	            {
 			cout << string(65, '=');
-                        cout << string(20, ' ') <<  "[@]::Transaction Completed..✓ .." << endl;
+                        cout << string(20, ' ') <<  "[@]::Transaction Completed" << endl;
 			cout << string(65, '=') << endl;
 			sqlite3_close(db);
 	            }
 		    
 		}
+		}
+	}
          
-         else
-         {
-                cout << "[x]::An Error Occured.." << sqlite3_errmsg(db) <<  endl;
+         else{
+		 cout << string(65, '=') << endl;
+		 cout << "[x]::An Error Occured.." << sqlite3_errmsg(db) <<  endl;
+		 cout << string(65, '=') << endl;
+		 sqlite3_close(db);
                 
          }
+	}
+	
+}
 	 
 
-}
 
 
-//Code wont work Function Exist after Transaction
+
+//Buggy code, should'nt be runned, left here for some reasons i dont know.., anaylse and see why.
 /*void send(int accn, int amount)
 {
 	sqlite3_stmt* stmt1;                                              string loginQuery = "SELECT * FROM Bank WHERE acc_n = '" +to_string(accn)+ "';";
@@ -349,7 +433,7 @@ void delete_user(int account, int pass)
 	}
 	else
 	{
-		cout << string(65, '=');
+		cout << string(65, '=') << endl;
 		cout << string(20, ' ') << "[✓]::Deleted .." << endl;
 		cout << string(65, '=') << endl;
 		sqlite3_close(db);
@@ -381,15 +465,27 @@ void login(int account, int pass)
 			    cout << "[✓]::Verified User....✓" << endl;
 			    cout << string(65, '=') << endl;
 			    cout << "[@]::Transaction[1] or Delete Account[2]: ";
-			    int choose;
+			    string choose;
 			    cin >> choose;
-			    if (choose == 1)
+			    cout << string(65, '=') << endl;
+			    if (containsText(choose)){
+				    cout << string(65, '=') << endl;
+				    cout << "[x]::Error, alphabet not allowed" << endl;
+				    cout << string(65, '=') << endl;
+				    sqlite3_close(db);
+			    }
+			    else{
+			    
+			    if (choose == "1")
 			    {
 				    transaction(acc);
+				    sqlite3_close(db);
 			    }
-			    else if (choose == 2)
+			    else if (choose == "2")
 			    {
 				    delete_user(acc , password);
+				    sqlite3_close(db);
+			    }
 			    }
 			    
 		    }
@@ -399,8 +495,10 @@ void login(int account, int pass)
 			    cout << "[x]::Incorect Password" << endl;
 			    cout << string(65, '=') << endl;
 			    cout << "Try recovering your account By inputing your secret text: ";
+			    //cout << string(65, '=') << endl;
 			    string sec;
 			    cin >> sec;
+			    //cout << string(65, '=') << endl;
 			    const char* secret = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
 			    if (sec == secret)
 			    {
@@ -425,6 +523,7 @@ void login(int account, int pass)
 			    cout << string(65, '=') << endl;
 			    cout << "[x]::Not verified...x" << endl;
 			    cout << string(65, '=') << endl;
+			    sqlite3_close(db);
 		    }
 		    
 		}
@@ -439,7 +538,10 @@ void login(int account, int pass)
 
         else
   	{
+	    cout << string(65, '=') << endl;
             cout << "[x]::An Error occured: " << sqlite3_errmsg(db) << endl;
+	    cout << string(65, '=') << endl;
+	    sqlite3_close(db);
         
 	}
 
@@ -492,10 +594,10 @@ void print()
 			int amount = sqlite3_column_int(statement, 4);
 			int total; int each;
 
-			total = 65;
+			total = 65; //screen width character length
 			each = total / 5;
 
-			cout << string(65, '=');
+			cout << string(65, '=') << endl;
 
 			int len_id = sizeof(id);
 			int len_acc = sizeof(account);
@@ -519,17 +621,29 @@ void print()
 
                 }
                 cout << string(65, '=') << endl;
+		sqlite3_close(db);
         }
 }
 //Edit your ADMIN name and password
 void admin()
 {
-	string name; int pass;
+	string name; string pass;
 	cout << "[@]::Admin: ";
 	cin >> name;
 	cout << "[@]::Pass: ";
 	cin >> pass;
-	if (name == "SHARK" && pass == 2003)
+	//cout << string(65, '=') << endl;
+
+	if (containsText(pass)){
+		//cin.clear();
+		//cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << string(65, '=') << endl;
+		cout << "[x]::Error, alphabet not allowed" << endl;
+		cout << string(65, '=') << endl;
+		
+	}
+	else{
+	if (name == "SHARK" && pass == "2003")
 	{
 		cout << string(65, '=') << endl;
                 cout << string(25, ' ') << "[✓]::Logged In As Admin.." << endl;
@@ -544,6 +658,7 @@ void admin()
 		cout << string(65, '=') << endl;
 		
 	}
+	}
 }
 
 
@@ -555,57 +670,102 @@ int main ()
 {
 	check();
         create_table();
-	while (2 == 2)
+	//int i;
+	while (2 ==  2) 
 	{
+	try {
 
-	    cout << "[@]::Admin Login [1] \n[@]::Sign Up [2] \n[@]::Sign In [3]: ";
-	    int num;
-            int account; int password; int amount; string secret;
+	    cout << "[@]::Admin Login [1]: user:SHARK:pass:2003 \n[@]::Sign Up [2] \n[@]::Sign In [3]\n[-]: ";
+	    string num;
+            string account; string password; string amount; string secret;
 	    cin >> num;
-	    switch (int x = num)
-	    {
-		    case 1:
+	    cout << string(65, '=') << endl;
+		    if (num == "1"){
 			    admin();
-			    break;
-		    case 2:
+			    }
+		    else if(num == "2"){
                             cout << string(65, '=');
-                            cout << string(25, ' ') << "[@] SIGN UP " << endl;
+                            cout << string(25, ' ') << "[@]::SIGN UP " << endl;
                             cout << "[@]::Account Number: ";
                             cin >> account;
+			    if (containsText(account)){
+				    cout << string(65, '=') << endl;
+				    cout << "[x]::Error, alphabet not allowed" << endl;
+				    cout << string(65, '=') << endl;
+				    //break;
+			    }
+			    else{
+			    int acc = stoi(account);
 			    cout << "[@]::4 digit Password: ";
 			    cin >> password;
+			    if (containsText(password)){
+				    cout << string(65, '=') << endl;
+				    cout << "[x]::Error, alphabet not allowed" << endl;
+				    cout << string(65, '=') << endl;
+				    //break;
+			    }
+			    else{
+			    int pass = stoi(password);
                             cout << "[@]::Amount to Credit: ";
                             cin >> amount;
+			    if (containsText(amount)){
+				    cout << string(65, '=') << endl;
+				    cout << "[x]::Error, alphabet not allowed" << endl;
+				    cout << string(65, '=') << endl;
+				    //break;
+			    }
+			    else{
+	                    int am = stoi(amount);
 			    cout << "[@]::Secret text for password Recovery: ";
 			    cin >> secret;
-			    add_user(account, password, secret, amount);
-			    break;
-		    case 3:
+			    add_user(acc, pass, secret, am);
+			    //break;
+			    }
+			    }
+			    }
+		    }
+		    else if(num == "3"){
                             cout << string(65, '=') << endl;
                             cout << "[@] SIGN IN" << endl;
 			    cout << "[@]::Account: ";
 			    cin >> account;
+			    if (containsText(account)){
+				    cout << string(65, '=') << endl;
+				    cout << "[x]::Error, alphabet not allowed" << endl;
+				    cout << string(65, '=') << endl;
+				    //break;
+			    }
+			    else{
+			    int acc = stoi(account);	    
 			    cout << "[@]::4 digit Password: ";
 			    cin >> password;
-			    login(account, password);
-			    break;
-            }
+			    if (containsText(password)){
+				    cout << string(65, '=') << endl;
+				    cout << "[x]::Error, alphabet not allowed" << endl;
+				    cout << string(65, '=') << endl;
+				    //break;
+			    }
+			    else{
+			    int pass = stoi(password);
+			    login(acc, pass);
+			    //break;
+			    }
+			    }
+		    }
+            
+		}catch(...){
+			cout << string(65, '=') << endl;
+			cout << "[x]::An error occured" << endl;
+			cout << string(65, '=') << endl;
+			//break;
+		
+	    
         }
+	}
+
 
 
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
