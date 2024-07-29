@@ -3,13 +3,13 @@ Select and Download the correct amalgamation .zip file corresponding to your Ope
 The sqlite source code used for the project will be available.
 
 Running on Linux Terminal:
-{
+```
     ~$ g++ source_code.. -o output_file -lpthread -ldl -lsqlite
     ~$ ./output_file
     example:
     ~$ g++ bankRun.cpp utils.cpp -o bank -lpthreas -ldl -lsqlite
     ~$ ./bank
-}
+```
 
 Program File Structure (Architecture)
 ```
