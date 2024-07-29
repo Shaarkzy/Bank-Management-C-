@@ -12,7 +12,7 @@ Running on Linux Terminal:
 }
 
 Program File Structure (Architecture)
-**.......
+```
 Bank-Management-C-/
 ├── bankRun.cpp
 ├── UTILS/
@@ -24,8 +24,7 @@ Bank-Management-C-/
 │   └── bank
 ├── README.md
 └── LICENSE
-**.........
-
+```
 Program still in development...
 Report bugs to my media account.
 
