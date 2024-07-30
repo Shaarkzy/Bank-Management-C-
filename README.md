@@ -25,7 +25,8 @@ Bank-Management-C-/
 ├── README.md
 └── LICENSE
 ```
-**Note**: compiled file is already given file permission
-Program still in development...
-Report bugs to my media account.
+**Note**: compiled file is already given file permission..
+
+*Program still in development...*
+*Report bugs to my media account.*
 
