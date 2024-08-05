@@ -7,7 +7,7 @@ Running on Linux Terminal:
     ~$ g++ source_code.. -o output_file -lpthread -ldl -lsqlite
     ~$ ./output_file
     example:
-    ~$ g++ bankRun.cpp UTILS/utils.cpp -o bank -lpthreas -ldl -lsqlite
+    ~$ g++ bankRun.cpp UTILS/utils.cpp -o bank -lpthread -ldl -lsqlite
     ~$ ./bank
 ```
 
