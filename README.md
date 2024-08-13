@@ -30,9 +30,10 @@ Bank-Management-C-/
 ```
 1. Create Account
 2. Delete Account
-3. Admin Login
-4. Credit Account
-5. Send money to an User
+3. Login to Account
+4. Admin Login
+5. Credit Account
+6. Send money to a User
 ```
 **Note**: compiled file is already given file permission..
 
