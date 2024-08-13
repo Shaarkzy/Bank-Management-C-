@@ -25,6 +25,15 @@ Bank-Management-C-/
 ├── README.md
 └── LICENSE
 ```
+
+**Features**
+```
+1. Create Account
+2. Delete Account
+3. Admin Login
+4. Credit Account
+5. Send money to an User
+```
 **Note**: compiled file is already given file permission..
 
 *Program still in development...*
