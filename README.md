@@ -2,7 +2,7 @@
 Select and Download the correct amalgamation .zip file corresponding to your Operating System.
 The sqlite source code used for the project will be available.
 
-Running on Linux Terminal:
+**Running on Linux Terminal**:
 ```
     ~$ g++ source_code.. -o output_file -lpthread -ldl -lsqlite
     ~$ ./output_file
@@ -11,7 +11,7 @@ Running on Linux Terminal:
     ~$ ./bank
 ```
 
-Program File Structure (Architecture)
+**Program File Structure (Architecture)**
 ```
 Bank-Management-C-/
 ├── bankRun.cpp
